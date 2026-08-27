@@ -6,7 +6,7 @@ console.log("PORT:", process.env.PORT);
 
 import mongoose from "mongoose";
 import express from "express";
-import  DB_NAME  from "Sri/constants.js"; // verify filename/spelling
+import  DB_NAME  from "../constants.js"; // verify filename/spelling
 
 const app = express();
 
