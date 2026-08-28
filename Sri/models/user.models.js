@@ -1,7 +1,9 @@
 import mongoose from "mongoose";
-
+import bcrypt from "bcrypt"
+import { JsonWebTokenError } from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
     {
+      
      userName:{
         type:String,
         required : true,
@@ -34,4 +36,32 @@ const userSchema = new mongoose.Schema(
      }
    },{timestamps:true})
 
-const User = mongoose.model("User",userSchema)
+
+ userSchema.pre("save",function(next){
+   if(!this.ismodified("password")) return next();
+    this.password = bcrypt.hash(this.password,10);
+    next();
+ })
+ userSchema.methods.generatorAccessToken = function(){
+   const token = Jwt.sign({
+      _id:this.id,
+      email : this.email,//this means we accses our value uper ke
+      username :this.userName,
+      fullname : this.fullName
+
+   },
+   process.env.ACCESS_TOKEN_SECRATE,
+   {expireIn : ACCESS_TOKEN_EXPIRE}
+  )
+ }
+ userSchema.methods.generatorRefreshToken = function(){
+   const tokenRef = Jwt.sign({
+      _id:this.id,
+
+   },
+   process.env.REFRESH_TOKEN_SECRATE,
+   {expireIn : REFRESH_TOKEN_EXPIRE}
+  )
+ }
+   
+export const User = mongoose.model("User",userSchema)
