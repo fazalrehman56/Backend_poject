@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
     next();
  })
  userSchema.methods.generatorAccessToken = function(){
-   const token = Jwt.sign({
+   const Token = Jwt.sign({
       _id:this.id,
       email : this.email,//this means we accses our value uper ke
       username :this.userName,
