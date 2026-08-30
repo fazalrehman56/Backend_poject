@@ -46,7 +46,3 @@ const videoSchema = new mongoose.Schema(
 export const Video = mongoose.model("Video",videoSchema)
 export const localTime = "11:26 PM";
 
-// Named export of a function
-export function greetUser(name) {
-  return `Hello, ${name}!`;
-}
