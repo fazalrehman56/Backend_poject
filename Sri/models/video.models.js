@@ -23,9 +23,10 @@ const videoSchema = new mongoose.Schema(
         lowercase : true,
      },
       description:{
-        type : String, // from aws kin services
+        type : String, 
         required : true,
         lowercase :true,
+
      },
      duaration:{
         type : Number, 
