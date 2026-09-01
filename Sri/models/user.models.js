@@ -65,9 +65,5 @@ const userSchema = new mongoose.Schema(
  }
    
 export const User = mongoose.model("User",userSchema)
-export const localTime = "11:26 PM";
 
-// Named export of a function
-export function greetUser(name) {
-  return `Hello, ${name}!`;
-}
+
