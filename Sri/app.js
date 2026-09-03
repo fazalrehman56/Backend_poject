@@ -12,7 +12,10 @@ app.use(
   })
 );
 
-
+//  Parsers & Static Files
+app.use(express.json({ limit: "16kb" }));
+app.use(express.urlencoded({ extended: true, limit: "16kb" })); // added extended: true
+app.use(express.static("public"));
 
 // Cookie parser MUST come before routes
 app.use(cookieParser());
