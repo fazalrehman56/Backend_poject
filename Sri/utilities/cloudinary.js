@@ -10,7 +10,7 @@ cloudinary.config({
 });
 
 
-const uploadCloudinary = async (localFile) => {
+export const uploadCloudinary = async (localFile) => {
     try {
         if(!localFile) return;
         // Upload an image/video stuff
