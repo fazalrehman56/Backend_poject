@@ -1,5 +1,5 @@
 import asyncHandler from "../utilities/asynchandler.js";
-
+import { ApiError } from "../utilities/apierrors.js";
 const registerUsers = asyncHandler(async(req,res)=>{
      // take user details from frontend
      // validation - no empty
@@ -11,5 +11,16 @@ const registerUsers = asyncHandler(async(req,res)=>{
      // return repsonse
      const {fullName,email,userName,Password} = req.body()
      console.log("emial is ",email)
+     if([fullName,email,userName,Password].some((fileds)=> 
+      fileds?.trim()===""
+    )){
+      throw new ApiError(300,"all fields are required")
+    }
+
+     
+
+
+
+
      })
 export  default registerUsers;
