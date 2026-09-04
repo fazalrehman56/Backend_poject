@@ -9,5 +9,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
      //create user object & create entry in data base
      // remove password and refresh token 
      // return repsonse
+     const {fullName,email,userName,Password} = req.body()
+     console.log("emial is ",email)
      })
 export  default registerUsers;
