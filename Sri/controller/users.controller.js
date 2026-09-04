@@ -14,7 +14,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
      if([fullName,email,userName,Password].some((fileds)=> 
       fileds?.trim()===""
     )){
-      throw new ApiError(300,"all fields are required")
+       new ApiError(300,"all fields are required")
     }
 
      
