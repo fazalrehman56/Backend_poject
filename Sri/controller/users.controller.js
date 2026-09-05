@@ -14,6 +14,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
      // return repsonse
      const {fullName,email,userName,Password} = req.body
      console.log("email is ",email)
+     console.log("req.body",req.body)
      
      if([fullName,email,userName,Password].some((fileds)=>
       fileds?.trim()===""
