@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
         required : true,
         lowercase :true,
      },
-     avator:{
+     avatar:{
         type : String, // from aws kin services
         required : true,
      },
