@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
         type : String, // from aws kin services
         required : true,
      },
-     password:{
+     Password:{
         type : String, 
         required : true,
         required :[true,"password field is required !"]
@@ -42,31 +42,32 @@ const userSchema = new mongoose.Schema(
 
 
  userSchema.pre("save",async function(next){
-   if(!this.isModified("password")) return next();
-    this.password = await bcrypt.hash(this.password,10);
+   if(!this.isModified("Password")) return next();
+    this.Password = await bcrypt.hash(this.Password,10);
     next();
  })
  userSchema.methods.generatorAccessToken = function(){
-   const Token = jwt.sign({
-      _id:this.id,
-      email : this.email,//this means we accses our value uper ke
-      username :this.userName,
-      fullname : this.fullName
+   const token = jwt.sign(
+      {
+         _id: this._id,
+         email: this.email,
+         username: this.userName,
+         fullname: this.fullName
+      },
+      process.env.ACCESS_TOKEN_SECRATE,
+      { expiresIn: process.env.ACCESS_TOKEN_EXPIRE }
+   )
+   return token   // ✅
+}
 
-   },
-   process.env.ACCESS_TOKEN_SECRATE,
-   {expireIn : ACCESS_TOKEN_EXPIRE}
-  )
- }
- userSchema.methods.generatorRefreshToken = function(){
-   const tokenRef = jwt.sign({
-      _id:this.id,
-
-   },
-   process.env.REFRESH_TOKEN_SECRATE,
-   {expiresIn : REFRESH_TOKEN_EXPIRE}
-  )
- }
+userSchema.methods.generatorRefreshToken = function(){
+   const token = jwt.sign(
+      { _id: this._id },
+      process.env.REFRESH_TOKEN_SECRATE,
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
+   )
+   return token   // ✅
+}
    
 export const User = mongoose.model("User",userSchema)
 
