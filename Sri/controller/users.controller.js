@@ -32,7 +32,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
      console.log(req.file)
      const localCoverImgPath= req.files?.coverImg[0].path
 
-     if(localAvatorPath){
+     if(!localAvatorPath){
           throw new ApiError(500,"avator field requird")
      }
      const avatar = await uploadCloudinary(localAvatorPath)
