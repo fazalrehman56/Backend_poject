@@ -28,16 +28,17 @@ const registerUsers = asyncHandler(async(req,res)=>{
      if(existedUSer){
           throw new ApiError(400,"THE User is Already Exist BROOO")
      }
-     const localAvatorPath= req.files?.avator[0]
-     const localCoverImgPath= req.files?.avator[0]
+     const localAvatorPath= req.files?.avatar[0].path;
+     console.log(req.file)
+     const localCoverImgPath= req.files?.coverImg[0].path
 
      if(localAvatorPath){
           throw new ApiError(500,"avator field requird")
      }
-     const avator = await uploadCloudinary(localAvatorPath)
+     const avatar = await uploadCloudinary(localAvatorPath)
      const CoverImg = await uploadCloudinary(localCoverImgPath)
 
-     if(!avator){
+     if(!avatar){
             throw new ApiError(500,"avator field requird")
      }
     const user = await User.create({
@@ -45,7 +46,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
           fullName,
           Password,
           email,
-          avator : avator.url,
+          avatar : avatar.url,
           coverImg : CoverImg.url
 
      })
