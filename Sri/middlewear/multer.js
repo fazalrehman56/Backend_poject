@@ -16,5 +16,5 @@ const storage = multer.diskStorage({ //disk m store hohi file
 })
 
  export const upload = multer({ 
-    storage: storage 
+    storage, 
 })
