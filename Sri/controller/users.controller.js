@@ -12,6 +12,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
      //create user object & create entry in data base
      // remove password and refresh token 
      // return repsonse
+     // cont a,b,c = 10
      const {fullName,email,userName,Password} = req.body
      console.log("email is ",email)
      console.log("req.body",req.body)
@@ -29,7 +30,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
           throw new ApiError(400,"THE User is Already Exist BROOO")
      }
      const localAvatorPath= req.files?.avatar[0].path;
-     console.log(req.file)
+     console.log(req.files)
      const localCoverImgPath= req.files?.coverImg[0].path
 
      if(!localAvatorPath){
@@ -50,9 +51,9 @@ const registerUsers = asyncHandler(async(req,res)=>{
           coverImg : CoverImg.url
 
      })
-     const createdUser = user.findbyId(user._id).select(
-          "-password -refresh_Token"
-     )
+    const createdUser = await User.findById(user._id).select(
+    "-Password -refresh_Token"
+)
      if(!createdUser){
           throw new ApiError(500,"something went worng while register the user")
      }
