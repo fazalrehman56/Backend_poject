@@ -41,10 +41,10 @@ const userSchema = new mongoose.Schema(
    },{timestamps:true})
 
 
- userSchema.pre("save",async function(next){
-   if(!this.isModified("Password")) return next();
+ userSchema.pre("save",async function(){
+   if(!this.isModified("Password")) return
     this.Password = await bcrypt.hash(this.Password,10);
-    next();
+    
  })
  userSchema.methods.generatorAccessToken = function(){
    const token = jwt.sign(
