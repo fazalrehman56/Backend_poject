@@ -51,6 +51,7 @@ const registerUsers = asyncHandler(async(req,res)=>{
           coverImg : CoverImg.url
 
      })
+     //user field mae sy password and refresh_Token hta do
     const createdUser = await User.findById(user._id).select(
     "-Password -refresh_Token"
 )
