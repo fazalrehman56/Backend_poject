@@ -3,6 +3,19 @@ import  ApiError from "../utilities/apierrors.js";
 import { User } from "../models/user.models.js";
 import { uploadCloudinary } from "../utilities/cloudinary.js";
 import { ApiResponse } from "../utilities/ResponseApi.js";
+const generateAccessAndRefresgToken = async (user_id)=>{
+  try{
+     const user =  await User.findById(user_id)
+     const accessToken =  user.generatorAccessToken
+     const refreshToken = user.generatorRefreshToken
+     //now we have to add refesh token on that user , add refresh token to db
+     user.refresh_Token = refreshToken
+     user.save({validateBeforeSave : flase}) // jab ham user save ya modify krty to jo requried filed hoty wo triger ho jati
+  }
+  catch(error){
+throw new ApiError(500, "something went worng will generating access token and refresh token ")
+  }
+}
 const registerUsers = asyncHandler(async(req,res)=>{
      // take user details from frontend
      // validation - no empty
