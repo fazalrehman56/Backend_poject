@@ -62,4 +62,23 @@ const registerUsers = asyncHandler(async(req,res)=>{
      new ApiResponse(200,createdUser,"user register successfully")
    )
      })
+
+     const loginUser = asyncHandler(async(req,res)=>{
+
+          const {fullName,email,userName,Password} = req.body
+          if(!userName || !email){
+            throw new ApiError(400,"UserName or Email field requried")
+          }
+          const user = await User.findById({
+               $or:[{userName},{email}]
+          })
+          if(!user){
+               throw new ApiError(400,"THE User dosn't Exist BROOO")
+          }
+          const isPasswordValid = await user.isPasswordCorrect(Password);
+          if(!isPasswordValid){
+               throw new ApiError(401,"Password is not valid")
+          }
+
+      })
 export  default registerUsers;
