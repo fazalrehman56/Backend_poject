@@ -46,6 +46,9 @@ const userSchema = new mongoose.Schema(
     this.Password = await bcrypt.hash(this.Password,10);
     
  })
+ userSchema.methods.isPasswordCorrect =  async function(password){
+   return  await bcrypt.compare(password,this.Password)
+ }
  userSchema.methods.generatorAccessToken = function(){
    const token = jwt.sign(
       {
