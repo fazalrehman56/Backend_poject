@@ -3,6 +3,7 @@ import ApiError from "../utilities/apierrors.js";
 import { User } from "../models/user.models.js";
 import { uploadCloudinary } from "../utilities/cloudinary.js";
 import { ApiResponse } from "../utilities/ResponseApi.js";
+import { jwtVerify } from "../middlewear/Auth.js";
 const generateAccessAndRefresgToken = async (user_id) => {
      try {
           const user = await User.findById(user_id)
@@ -103,8 +104,8 @@ const loginUser = asyncHandler(async (req, res) => {
      }
 
      return res.status(200)
-     .cookie("accsessToken " , accessToken)
-     .cookie("refreshToken " , refreshToken)
+     .cookies("accsessToken " , accessToken)
+     .cookies("refreshToken " , refreshToken)
      .json(new ApiResponse(
           200,
      {
@@ -116,4 +117,26 @@ const loginUser = asyncHandler(async (req, res) => {
 
 
 })
-export default registerUsers;
+
+const logoutUser = asyncHandler(async(req,res)=>{
+  await User.findByIdAndUpdate(
+     req.user._id,
+     {
+     $set:{
+          refreshToken : undefined
+     }
+      },
+      {
+          new : true
+      }
+  )
+   const option ={
+          httponly : true,
+          secure : true
+     }
+return res.status(200)
+.clearCookie("accsessToken " , option)
+.clearCookie("refreshToken " , option)
+.json(new ApiResponse(200,{},"user logout succesfully"))
+})
+export default {registerUsers,loginUser,logoutUser};
