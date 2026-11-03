@@ -3,26 +3,27 @@ import ApiError from "../utilities/apierrors.js";
 import { User } from "../models/user.models.js";
 import { uploadCloudinary } from "../utilities/cloudinary.js";
 import { ApiResponse } from "../utilities/ResponseApi.js";
+import jwt from "jsonwebtoken";
 const generateAccessAndRefresgToken = async (user_id) => {
-  try {
+     try {
 
-    const user = await User.findById(user_id)
-    const accessToken = user.generatorAccessToken()
-    const refreshToken = user.generatorRefreshToken()
-    user.refresh_Token = refreshToken
-    await user.save({ validateBeforeSave: false })
+          const user = await User.findById(user_id)
+          const accessToken = user.generatorAccessToken()
+          const refreshToken = user.generatorRefreshToken()
+          user.refresh_Token = refreshToken
+          await user.save({ validateBeforeSave: false })
 
-    return { accessToken, refreshToken }
-    console.log("ENV CHECK:", {
-  accessExpire: process.env.ACCESS_TOKEN_EXPIRE,
-  refreshExpire: process.env.REFRESH_TOKEN_EXPIRE,
-  accessSecretSet: !!process.env.ACCESS_TOKEN_SECRATE,
-  refreshSecretSet: !!process.env.REFRESH_TOKEN_SECRATE,
-})
-  } catch (error) {
-    console.log(error) // so you can see the real error in the terminal
-    throw new ApiError(500, error.message)
-}
+          return { accessToken, refreshToken }
+          console.log("ENV CHECK:", {
+               accessExpire: process.env.ACCESS_TOKEN_EXPIRE,
+               refreshExpire: process.env.REFRESH_TOKEN_EXPIRE,
+               accessSecretSet: !!process.env.ACCESS_TOKEN_SECRATE,
+               refreshSecretSet: !!process.env.REFRESH_TOKEN_SECRATE,
+          })
+     } catch (error) {
+          console.log(error) // so you can see the real error in the terminal
+          throw new ApiError(500, error.message)
+     }
 }
 const registerUsers = asyncHandler(async (req, res) => {
      // take user details from frontend
@@ -85,48 +86,86 @@ const registerUsers = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-  const { email, userName, Password } = req.body
+     const { email, userName, Password } = req.body
 
-  if (!userName && !email) {
-    throw new ApiError(400, "UserName or Email field required")
-  }
+     if (!userName && !email) {
+          throw new ApiError(400, "UserName or Email field required")
+     }
 
-  const user = await User.findOne({ $or: [{ userName }, { email }] })
-  if (!user) {
-    throw new ApiError(404, "User doesn't exist")
-  }
+     const user = await User.findOne({ $or: [{ userName }, { email }] })
+     if (!user) {
+          throw new ApiError(404, "User doesn't exist")
+     }
 
-  const isPasswordValid = await user.isPasswordCorrect(Password)
-  if (!isPasswordValid) {
-    throw new ApiError(401, "Password is not valid")
-  }
+     const isPasswordValid = await user.isPasswordCorrect(Password)
+     if (!isPasswordValid) {
+          throw new ApiError(401, "Password is not valid")
+     }
 
-  const { accessToken, refreshToken } = await generateAccessAndRefresgToken(user._id)
+     const { accessToken, refreshToken } = await generateAccessAndRefresgToken(user._id)
 
-  const loggedin = await User.findById(user._id).select("-Password -refresh_Token")
+     const loggedin = await User.findById(user._id).select("-Password -refresh_Token")
 
-  const option = { httpOnly: true, secure: true }
+     const option = { httpOnly: true, secure: true }
 
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, option)
-    .cookie("refreshToken", refreshToken, option)
-    .json(new ApiResponse(200, { user: loggedin, accessToken, refreshToken }, "User logged in successfully"))
+     return res
+          .status(200)
+          .cookie("accessToken", accessToken, option)
+          .cookie("refreshToken", refreshToken, option)
+          .json(new ApiResponse(200, { user: loggedin, accessToken, refreshToken }, "User logged in successfully"))
 })
 
 const logoutUser = asyncHandler(async (req, res) => {
-  await User.findByIdAndUpdate(
-    req.user._id,
-    { $set: { refresh_Token: undefined } },
-    { new: true }
-  );
+     await User.findByIdAndUpdate(
+          req.user._id,
+          { $set: { refresh_Token: undefined } },
+          { new: true }
+     );
 
-  const option = { httpOnly: true, secure: true };
+     const option = { httpOnly: true, secure: true };
 
-  return res
-    .status(200)
-    .clearCookie("accessToken", option)
-    .clearCookie("refreshToken", option)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+     return res
+          .status(200)
+          .clearCookie("accessToken", option)
+          .clearCookie("refreshToken", option)
+          .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
-export {registerUsers,loginUser,logoutUser};
+
+const RefreshAccessToken = asyncHandler(async (req, res) => {
+     try {
+          const IncommingAccessToken = req.cookies.refreshToken ||
+               req.body.refreshToken
+
+          if (!IncommingAccessToken) {
+               throw new ApiError(401, "UnAuthraized Person!")
+          }
+           const decodedToken = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRATE);
+           const user = await User.findById(decodedToken._id)
+
+           if(!user){
+               throw new ApiError(401,"invalid Refresh token")
+           }
+           if(IncommingAccessToken !== user.refresh_Token){
+               throw new ApiError(401,"Refresh Token is expired or Used")
+           }
+         const {AccessToken,newRefreshToken} = await generateAccessAndRefresgToken(user._id)
+
+          const option = { httpOnly: true, secure: true };
+
+         return res 
+         .status(200)
+         .clearCookie("accessToken",AccessToken, option)
+          .clearCookie("refreshToken",newRefreshToken , option)
+          .json(new ApiResponse(200, {AccessToken,refreshToken:newRefreshToken}, "Access Token Refreshed"));
+
+
+
+          
+
+          
+     }
+     catch (error) {
+          throw new ApiError("something went worng")
+     }
+})
+export { registerUsers, loginUser, logoutUser };
