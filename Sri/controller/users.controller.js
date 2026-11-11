@@ -359,5 +359,7 @@ export {
      getCurrentUser,
      upadateUserDetails,
      changeAvator,
-     changeCoverImg
+     changeCoverImg,
+     getUserChannelProfile,
+     getUserWatchedHistory
 };
