@@ -1,3 +1,4 @@
+import { Schema } from "mongoose";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt"
 //import { JsonWebTokenError } from "jsonwebtoken";
@@ -58,7 +59,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 }
 userSchema.methods.generatorAccessToken = function () {
    const token = jwt.sign(
-      {
+      {    // jab ham refresh and acees token banaty controler m to usky parameters mae jo id hoti wo ismy dal deta is waja sy ham id lay lety us user ke
          _id: this._id,
          email: this.email,
          username: this.userName,

@@ -35,6 +35,7 @@ const videoSchema = new mongoose.Schema(
      veiws:{
         type:Number,
         required : true,
+        default: 0
      },
      ispubliched:{
         type:Boolean,
